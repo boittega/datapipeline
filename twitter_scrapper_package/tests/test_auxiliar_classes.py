@@ -8,7 +8,11 @@ def test_activate_all_fields(tweetfields_class):
 
 
 def test_activate_all_public_fields(tweetfields_class):
-    non_public_fields = ["non_public_metrics", "organic_metrics", "promoted_metrics"]
+    non_public_fields = [
+        "non_public_metrics",
+        "organic_metrics",
+        "promoted_metrics",
+    ]
 
     tweetfields_class.activate_all_public_fields()
 
