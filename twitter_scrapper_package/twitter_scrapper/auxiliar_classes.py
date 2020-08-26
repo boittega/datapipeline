@@ -36,7 +36,11 @@ class TweetFields(TweetBaseDataclass):
 
     def activate_all_public_fields(self):
         self.activate_all_fields(
-            excetion=["non_public_metrics", "organic_metrics", "promoted_metrics"]
+            excetion=[
+                "non_public_metrics",
+                "organic_metrics",
+                "promoted_metrics",
+            ]
         )
 
 

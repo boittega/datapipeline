@@ -1,8 +1,8 @@
 import pytest
 
-from twitter_scrapper.core import TweetScrapper, requests
-from twitter_scrapper.tweet_search import TweetSearch
-from twitter_scrapper.auxiliar_classes import TweetFields
+from ..twitter_scrapper.core import TweetScrapper, requests
+from ..twitter_scrapper.tweet_search import TweetSearch
+from ..twitter_scrapper.auxiliar_classes import TweetFields
 
 
 @pytest.fixture
@@ -13,7 +13,11 @@ def test_data() -> list:
             "includes": {"users": [{"user": "1"}]},
             "meta": {"next_token": "123"},
         },
-        {"data": [{"data": "1"}], "includes": {"users": [{"user": "1"}]}, "meta": {}},
+        {
+            "data": [{"data": "1"}],
+            "includes": {"users": [{"user": "1"}]},
+            "meta": {},
+        },
     ]
 
 
@@ -52,6 +56,8 @@ class MockResponse:
 @pytest.fixture(autouse=True)
 def mock_request(monkeypatch, test_data):
     def mock_get(*args, **kwargs):
-        return MockResponse(url=kwargs["url"], json_data=test_data, status_code=200)
+        return MockResponse(
+            url=kwargs["url"], json_data=test_data, status_code=200
+        )
 
     monkeypatch.setattr(requests, "get", mock_get)

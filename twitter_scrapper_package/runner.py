@@ -1,5 +1,5 @@
-from twitter_scrapper.tweet_search import TweetSearch
-from twitter_scrapper.auxiliar_classes import TweetFields, UserFields
+from .twitter_scrapper.tweet_search import TweetSearch
+from .twitter_scrapper.auxiliar_classes import TweetFields, UserFields
 import json
 import argparse
 

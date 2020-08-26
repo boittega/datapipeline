@@ -1,10 +1,25 @@
-from typing import Generator
+from typing import Iterator
 from urllib.parse import urlencode, urlunparse
 
 import requests
 
 
 class TweetScrapper:
+    """
+    Base class to request data from Twitter's API
+
+    :param bearer_token: Twitter authentication bearer token
+    :type bearer_token: str
+    :param url_scheme: Twitter URL Scheme, defaults to "https"
+    :type url_scheme: str
+    :param url_base: Twitter URL base, defaults to "api.twitter.com"
+    :type url_base: str
+    :param url_path: Twitter URL path, defaults to ""
+    :type url_path: str
+    :param url_query: Twitter URL query, defaults to {}
+    :type url_query: dict
+    """
+
     def __init__(
         self,
         bearer_token,
@@ -20,6 +35,15 @@ class TweetScrapper:
         self.url_query = url_query or {}
 
     def create_url(self) -> str:
+        """
+        Unparse the URL parameters into a single URL,
+        encoding the query dictionary.
+        It joins the url_scheme, url_base, url_path
+        and encoded url_query.
+
+        :return: URL string
+        :rtype: str
+        """
         return urlunparse(
             (
                 self.url_scheme,
@@ -31,7 +55,15 @@ class TweetScrapper:
             )
         )
 
-    def paginate(self, next_token="") -> Generator:
+    def paginate(self, next_token="") -> Iterator[dict]:
+        """
+        Paginage API requests
+
+        :param next_token: Next page token, defaults to ""
+        :type next_token: str, optional
+        :yield: Yield one page
+        :rtype: Iterator[dict]
+        """
         if next_token:
             self.url_query.update({"next_token": next_token})
 
@@ -42,6 +74,12 @@ class TweetScrapper:
             yield from self.paginate(next_token=data["meta"]["next_token"])
 
     def extract(self) -> dict:
+        """
+        Request data from API
+
+        :return: The API JSON response
+        :rtype: dict
+        """
         response = requests.get(
             url=self.create_url(),
             headers={"Authorization": f"Bearer {self.bearer_token}"},
