@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 .pre-commit-config.yaml
+.vscode/settings.json
