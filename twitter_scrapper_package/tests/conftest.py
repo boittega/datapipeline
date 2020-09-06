@@ -2,7 +2,6 @@ import pytest
 
 from ..twitter_scrapper.core import TweetScrapper, requests
 from ..twitter_scrapper.tweet_search import TweetSearch
-from ..twitter_scrapper.auxiliar_classes import TweetFields
 
 
 @pytest.fixture
@@ -29,11 +28,6 @@ def tweetscrapper_class():
 @pytest.fixture
 def tweetsearch_class():
     return TweetSearch(bearer_token="")
-
-
-@pytest.fixture
-def tweetfields_class():
-    return TweetFields()
 
 
 class MockResponse:

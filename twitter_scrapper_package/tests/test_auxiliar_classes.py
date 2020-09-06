@@ -1,20 +1,21 @@
 from dataclasses import asdict
+from ..twitter_scrapper.auxiliar_classes import TweetFields
 
 
-def test_activate_all_fields(tweetfields_class):
-    tweetfields_class.activate_all_fields()
+def test_activate_fields():
+    tweetfields_class = TweetFields.activate_fields()
 
     assert all([value for key, value in asdict(tweetfields_class).items()])
 
 
-def test_activate_all_public_fields(tweetfields_class):
+def test_activate_public_fields():
     non_public_fields = [
         "non_public_metrics",
         "organic_metrics",
         "promoted_metrics",
     ]
 
-    tweetfields_class.activate_all_public_fields()
+    tweetfields_class = TweetFields.activate_public_fields()
 
     assert all(
         [

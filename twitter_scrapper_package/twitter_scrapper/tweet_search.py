@@ -3,6 +3,8 @@ from typing import Iterator
 from .auxiliar_classes import TweetFields, UserFields
 from .core import TweetScrapper
 
+TWEET_SEARCH_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.00Z"
+
 
 class TweetSearch(TweetScrapper):
     """

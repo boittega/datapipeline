@@ -13,11 +13,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
     ts = TweetSearch(args.bearer)
 
-    tf = TweetFields()
-    tf.activate_all_public_fields()
+    tf = TweetFields.activate_public_fields()
 
-    uf = UserFields()
-    uf.activate_all_fields()
+    uf = UserFields.activate_fields()
 
     timestamp_format = "%Y-%m-%dT%H:%M:%S.00Z"
 

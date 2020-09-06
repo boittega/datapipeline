@@ -1,14 +1,38 @@
 from dataclasses import dataclass, fields, asdict
+from typing import Optional, List
 
 
 @dataclass
 class TweetBaseDataclass:
-    def activate_all_fields(self, excetion=[]):
-        for key in fields(self):
-            if key.name not in excetion:
-                setattr(self, key.name, True)
+    @classmethod
+    def activate_fields(
+        cls,
+        include_only: Optional[List[str]] = None,
+        exclude: Optional[List[str]] = None,
+    ) -> "TweetBaseDataclass":
+        """
+        Set Fields to true.
+
+        :param include_only: List of fields to activate, activate all
+        if None is sent, defaults to None
+        :type include_only: Optional[List[str]], optional
+        :param exclude: List of fields to not activate, defaults to None
+        :type exclude: Optional[List[str]], optional
+        """
+        obj = cls()
+        for key in fields(obj):
+            if (
+                (include_only and key.name in include_only)
+                or (exclude and key.name not in exclude)
+                or not include_only
+            ):
+                setattr(obj, key.name, True)
+        return obj
 
     def get_activated_fields(self) -> str:
+        """
+        Return a comma separated list of field names
+        """
         return ",".join([key for key, value in asdict(self).items() if value])
 
 
@@ -34,9 +58,13 @@ class TweetFields(TweetBaseDataclass):
     source: bool = False
     withheld: bool = False
 
-    def activate_all_public_fields(self):
-        self.activate_all_fields(
-            excetion=[
+    @classmethod
+    def activate_public_fields(cls) -> "TweetFields":
+        """
+        Activate all but the non public fields.
+        """
+        return cls.activate_fields(
+            exclude=[
                 "non_public_metrics",
                 "organic_metrics",
                 "promoted_metrics",
