@@ -21,11 +21,11 @@ class TweetBaseDataclass:
         """
         obj = cls()
         for key in fields(obj):
-            if (
-                (include_only and key.name in include_only)
-                or (exclude and key.name not in exclude)
-                or not include_only
-            ):
+            if include_only and key.name in include_only:
+                setattr(obj, key.name, True)
+            elif exclude and key.name in exclude:
+                setattr(obj, key.name, False)
+            else:
                 setattr(obj, key.name, True)
         return obj
 

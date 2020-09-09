@@ -17,10 +17,10 @@ def test_activate_public_fields():
 
     tweetfields_class = TweetFields.activate_public_fields()
 
-    assert all(
+    assert not any(
         [
             value
             for key, value in asdict(tweetfields_class).items()
-            if key not in non_public_fields
+            if key in non_public_fields
         ]
     )

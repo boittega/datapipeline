@@ -14,10 +14,10 @@ args = {
 with DAG(
     "twitter_scrapper",
     default_args=args,
-    schedule_interval="0 * * * *",
+    schedule_interval="0 7 * * *",
     max_active_runs=1,
 ) as dag:
-    dummy = TwitterOperator(
+    twitter_search = TwitterOperator(
         task_id="get_twitter_aluraonline",
         query="AluraOnline",
         file_path=(
@@ -35,7 +35,7 @@ with DAG(
             f" next_execution_date.strftime('{TWEET_SEARCH_TIME_FORMAT}') "
             "}}"
         ),
-        tweet_fields=TweetFields.activate_fields(),
+        tweet_fields=TweetFields.activate_public_fields(),
         user_data=True,
         user_fields=UserFields.activate_fields(),
     )
