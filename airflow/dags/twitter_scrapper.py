@@ -1,3 +1,4 @@
+from os import path
 from pathlib import Path
 from airflow import DAG
 from airflow.utils.dates import days_ago
@@ -9,15 +10,15 @@ from twitter_scrapper.tweet_search import TWEET_SEARCH_TIME_FORMAT
 args = {
     "owner": "airflow",
     "depends_on_past": False,
-    "start_date": days_ago(7),
+    "start_date": days_ago(6),
 }
 
-base_folder = Path.joinpath(
-    Path("~/Documents").expanduser(), "twitter_scrapper"
+base_folder = path.join(
+    str(Path("~/Documents").expanduser()), "twitter_scrapper"
 )
 partition_folder = "exported_date={{ ts_nodash }}"
-bronze_folder = Path.joinpath(base_folder, "bronze", partition_folder)
-silver_folder = Path.joinpath(base_folder, "silver", partition_folder)
+bronze_folder = path.join(base_folder, "bronze", partition_folder)
+silver_folder = path.join(base_folder, "silver", partition_folder)
 
 
 with DAG(
@@ -29,9 +30,9 @@ with DAG(
     twitter_search = TwitterOperator(
         task_id="get_twitter_aluraonline",
         query="AluraOnline",
-        file_path=str(Path.joinpath(
+        file_path=path.join(
             bronze_folder, "Twitter_AluraOnline_{{ ts_nodash }}.json"
-        )),
+        ),
         start_time=(
             "{{" f" execution_date.strftime('{TWEET_SEARCH_TIME_FORMAT}') " "}}"
         ),
@@ -47,16 +48,12 @@ with DAG(
 
     twitter_transform = SparkSubmitOperator(
         task_id="transform_twitter_aluraonline",
-        application=str(Path.joinpath(
-            Path(__file__).parents[2], "spark/twitter_search_transformation.py"
-        )),
-        name="Twitter_search_transformation",
-        application_args=[
-            "--src",
-            str(bronze_folder),
-            "--dest",
-            str(silver_folder),
-        ],
+        application=path.join(
+            str(Path(__file__).parents[2]),
+            "spark/twitter_search_transformation.py",
+        ),
+        name="twitter_search_transformation",
+        application_args=["--src", bronze_folder, "--dest", silver_folder],
     )
 
     twitter_search >> twitter_transform

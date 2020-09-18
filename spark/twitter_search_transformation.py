@@ -1,5 +1,5 @@
 import argparse
-import os
+from os import path
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, explode
@@ -40,7 +40,7 @@ user_columns = [
 
 def tranform_search(src, dest):
     spark = SparkSession.builder.appName(
-        name="Twitter search transformation"
+        name="twitter_search_transformation"
     ).getOrCreate()
 
     df = spark.read.json(src)
@@ -53,9 +53,11 @@ def tranform_search(src, dest):
         *user_columns
     )
 
-    tweet_df.coalesce(1).write.parquet(os.path.join(dest, "tweet"))
+    tweet_df.coalesce(1).write.mode("overwrite").parquet(
+        path.join(dest, "tweet")
+    )
 
-    user_df.coalesce(1).write.parquet(os.path.join(dest, "user"))
+    user_df.coalesce(1).write.mode("overwrite").parquet(path.join(dest, "user"))
 
 
 if __name__ == "__main__":
