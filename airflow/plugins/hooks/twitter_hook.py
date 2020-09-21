@@ -1,4 +1,4 @@
-from typing import Iterator, Optional
+from typing import Iterator, Optional, Dict, Any
 
 from airflow.hooks.base_hook import BaseHook
 from twitter_scrapper.auxiliar_classes import TweetFields, UserFields
@@ -12,20 +12,20 @@ class TwitterHook(BaseHook):
     :param query: Query string
     :type query: str
     :param conn_id: Connection name, defaults to "twitter_default"
-    :type conn_id: str
+    :type conn_id: Optional[str]
     :param bearer: Twitter authentication bearer token, gets from
     connection if not sent.
-    :type bearer: str
-    :param start_time: Twitter query start time
-    :type start_time: str
-    :param end_time: Twitter query end time
-    :type end_time: str
-    :param tweet_fields: List of tweet columns to return
-    :type tweet_fields: TweetFields dataclass
-    :param user_data: Flag to user data
-    :type user_data: bool
-    :param user_fields: List of user columns to return
-    :type user_fields: UserFields dataclass
+    :type bearer: Optional[str]
+    :param start_time: Twitter query start time, optional
+    :type start_time: Optional[str]
+    :param end_time: Twitter query end time, optional
+    :type end_time: Optional[str]
+    :param tweet_fields: List of tweet columns to return, optional
+    :type tweet_fields: Optional[TweetFields]
+    :param user_data: Flag to user data, defaults to false
+    :type user_data: Optional[bool]
+    :param user_fields: List of user columns to return, optional
+    :type user_fields: Optional[UserFields]
     """
 
     def __init__(
@@ -55,9 +55,12 @@ class TwitterHook(BaseHook):
         conn = self.get_connection(self.conn_id)
         return conn.extra_dejson.get("bearer")
 
-    def tweet_search(self) -> Iterator[dict]:
+    def tweet_search(self) -> Iterator[Dict[str, Any]]:
         """
         Returns the TweetSearch query generator
+
+        :yield: Yield each page
+        :rtype: Iterator[Dict[str, Any]]
         """
         ts = TweetSearch(self.bearer)
 

@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Iterator, Optional, Dict, Any
 
 from .auxiliar_classes import TweetFields, UserFields
 from .core import TweetScrapper
@@ -11,24 +11,24 @@ class TweetSearch(TweetScrapper):
     Class to request Twitter Search API endpoint
 
     :param bearer_token: Twitter authentication bearer token
-    :type bearer_token: str
+    :type bearer_token: Optional[str]
     :param url_scheme: Twitter URL Scheme, defaults to "https"
-    :type url_scheme: str
+    :type url_scheme: Optional[str]
     :param url_base: Twitter URL base, defaults to "api.twitter.com"
-    :type url_base: str
+    :type url_base: Optional[str]
     :param url_path: Twitter URL path, defaults to "/2/tweets/search/recent"
-    :type url_path: str
+    :type url_path: Optional[str]
     :param url_query: Twitter URL query, defaults to {}
-    :type url_query: dict
+    :type url_query: Optional[Dict[str, str]]
     """
 
     def __init__(
         self,
         bearer_token,
-        url_scheme=None,
-        url_base=None,
-        url_path=None,
-        url_query=None,
+        url_scheme: Optional[str] = None,
+        url_base: Optional[str] = None,
+        url_path: Optional[str] = None,
+        url_query: Optional[Dict[str, str]] = None,
     ):
         self.url_path = url_path or "/2/tweets/search/recent"
         super().__init__(
@@ -37,34 +37,34 @@ class TweetSearch(TweetScrapper):
 
     def tweet_search(
         self,
-        query,
-        start_time=None,
-        end_time=None,
-        tweet_fields=TweetFields(),
-        user_data=False,
-        user_fields=UserFields(),
-    ) -> Iterator[dict]:
+        query: str,
+        start_time: Optional[str] = None,
+        end_time: Optional[str] = None,
+        tweet_fields: Optional[TweetFields] = TweetFields(),
+        user_data: Optional[bool] = False,
+        user_fields: Optional[UserFields] = UserFields(),
+    ) -> Iterator[Dict[str, Any]]:
         """
         Queries Twitter Search
 
         :param query: Query string
-        :type query: str
+        :type query: Optional[str]
         :param start_time: The oldest UTC timestamp, from most recent 7 days,
         to which the Tweets will be provided. Format YYYY-MM-DDTHH:mm.ssZ.
         Defaults to None
-        :type start_time: str, optional
+        :type start_time: Optional[str]
         :param end_time: The most recent UTC timestamp, as recent as 30 seconds
         ago, to which the Tweets will be provided. Format YYYY-MM-DDTHH:mm.ssZ.
         Defaults to None.
-        :type end_time: str, optional
+        :type end_time: Optional[str]
         :param tweet_fields: Tweet fields requested, defaults to TweetFields()
-        :type tweet_fields: TweetFields class, optional
+        :type tweet_fields: Optional[TweetFields]
         :param user_data: Include user data, defaults to False
-        :type user_data: bool, optional
+        :type user_data: Optional[bool]
         :param user_fields: User fields requested, defaults to UserFields()
-        :type user_fields: UserFields class, optional
+        :type user_fields: Optional[UserFields]
         :yield: Yields Twitter Search results
-        :rtype: Iterator[dict]
+        :rtype: Iterator[Dict[str, Any]]
         """
         query_dict = {
             "query": query,

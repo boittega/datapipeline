@@ -11,6 +11,26 @@ from twitter_scrapper.auxiliar_classes import TweetFields, UserFields
 class TwitterOperator(BaseOperator):
     """
     Airflow Operator to store Twitter data localy
+
+    :param query: Query string, templated
+    :type query: str
+    :param file_path: Export file path, templated
+    :type file_path: str
+    :param conn_id: Connection name, optional
+    :type conn_id: Optional[str]
+    :param bearer: Twitter authentication bearer token, gets from
+    connection if not sent, optional
+    :type bearer: Optional[str]
+    :param start_time: Twitter query start time, templated and optional
+    :type start_time: Optional[str]
+    :param end_time: Twitter query end time, templated and optional
+    :type end_time: Optional[str]
+    :param tweet_fields: List of tweet columns to return, optional
+    :type tweet_fields: Optional[TweetFields]
+    :param user_data: Flag to user data, optional
+    :type user_data: Optional[bool]
+    :param user_fields: List of user columns to return, optional
+    :type user_fields: Optional[UserFields]
     """
 
     template_fields = [
@@ -49,9 +69,15 @@ class TwitterOperator(BaseOperator):
         self.user_fields = user_fields
 
     def create_parent_folder(self):
+        """
+        Create parent folder if not exists
+        """
         Path(Path(self.file_path).parent).mkdir(parents=True, exist_ok=True)
 
     def execute(self, context):
+        """
+        Extract Twitter search data into json file
+        """
         self.create_parent_folder()
         with open(self.file_path, "w") as output_file:
             for page in TwitterHook(

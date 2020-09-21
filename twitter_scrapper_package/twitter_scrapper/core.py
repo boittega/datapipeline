@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Iterator, Optional, Dict, Any
 from urllib.parse import urlencode, urlunparse
 
 import requests
@@ -9,24 +9,24 @@ class TweetScrapper:
     Base class to request data from Twitter's API
 
     :param bearer_token: Twitter authentication bearer token
-    :type bearer_token: str
+    :type bearer_token: Optional[str]
     :param url_scheme: Twitter URL Scheme, defaults to "https"
-    :type url_scheme: str
+    :type url_scheme: Optional[str]
     :param url_base: Twitter URL base, defaults to "api.twitter.com"
-    :type url_base: str
+    :type url_base: Optional[str]
     :param url_path: Twitter URL path, defaults to ""
-    :type url_path: str
+    :type url_path: Optional[str]
     :param url_query: Twitter URL query, defaults to {}
-    :type url_query: dict
+    :type url_query: Optional[Dict[str, str]]
     """
 
     def __init__(
         self,
-        bearer_token,
-        url_scheme=None,
-        url_base=None,
-        url_path=None,
-        url_query=None,
+        bearer_token: str,
+        url_scheme: Optional[str] = None,
+        url_base: Optional[str] = None,
+        url_path: Optional[str] = None,
+        url_query: Optional[Dict[str, str]] = None,
     ):
         self.bearer_token = bearer_token
         self.url_scheme = url_scheme or "https"
@@ -55,14 +55,14 @@ class TweetScrapper:
             )
         )
 
-    def paginate(self, next_token="") -> Iterator[dict]:
+    def paginate(self, next_token: str = "") -> Iterator[Dict[str, Any]]:
         """
         Paginage API requests
 
         :param next_token: Next page token, defaults to ""
         :type next_token: str, optional
         :yield: Yield one page
-        :rtype: Iterator[dict]
+        :rtype: Iterator[Dict[str, Any]]
         """
         if next_token:
             self.url_query.update({"next_token": next_token})
@@ -73,12 +73,12 @@ class TweetScrapper:
         if "next_token" in data.get("meta", {}):
             yield from self.paginate(next_token=data["meta"]["next_token"])
 
-    def extract(self) -> dict:
+    def extract(self) -> Dict[str, Any]:
         """
         Request data from API
 
         :return: The API JSON response
-        :rtype: dict
+        :rtype: Dict[str, Any]
         """
         response = requests.get(
             url=self.create_url(),

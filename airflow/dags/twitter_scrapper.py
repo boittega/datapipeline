@@ -34,11 +34,13 @@ with DAG(
             bronze_folder, "Twitter_AluraOnline_{{ ts_nodash }}.json"
         ),
         start_time=(
-            "{{" f" execution_date.strftime('{TWEET_SEARCH_TIME_FORMAT}') " "}}"
+            "{{"
+            f" execution_date.strftime('{ TWEET_SEARCH_TIME_FORMAT }') "
+            "}}"
         ),
         end_time=(
             "{{"
-            f" next_execution_date.strftime('{TWEET_SEARCH_TIME_FORMAT}') "
+            f" next_execution_date.strftime('{ TWEET_SEARCH_TIME_FORMAT }') "
             "}}"
         ),
         tweet_fields=TweetFields.activate_public_fields(),
