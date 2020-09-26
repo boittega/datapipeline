@@ -12,5 +12,5 @@ The following tasks are available on make:
 * install: Download Spark
 * test: Test Spark job
 * run: Manually run, with parameters:
-    * --src: Source folder or file
-    * --dest: Destination folder
+    * src: Source folder or file
+    * dest: Destination folder
