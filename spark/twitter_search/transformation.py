@@ -3,7 +3,7 @@ from os import path
 from typing import List
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, explode
+from pyspark.sql.functions import col, explode, lit
 
 DEFAULT_TWEET_COLUMNS = [
     "author_id",
@@ -39,15 +39,12 @@ DEFAULT_USER_COLUMNS = [
 ]
 
 
-def export_parquet(spark: SparkSession, df: DataFrame, dest: str):
-    df.coalesce(1).write.mode("overwrite").parquet(dest)
+def export_csv(df: DataFrame, dest: str):
+    df.coalesce(1).write.option("header", True).mode("overwrite").csv(dest)
 
 
 def get_first_level(
-    spark: SparkSession,
-    df: DataFrame,
-    first_level_col: str,
-    column_list: List[str],
+    df: DataFrame, first_level_col: str, column_list: List[str]
 ):
     return (
         df.select(explode(col(first_level_col)))
@@ -56,34 +53,31 @@ def get_first_level(
     )
 
 
-def export_tweets(
-    spark: SparkSession, df: DataFrame, dest: str, tweet_columns: List[str]
-):
-    tweet_df = get_first_level(spark, df, "data", tweet_columns)
-    export_parquet(spark, tweet_df, path.join(dest, "tweet"))
-
-
-def export_users(
-    spark: SparkSession, df: DataFrame, dest: str, user_columns: List[str]
-):
-    user_df = get_first_level(spark, df, "includes.users", user_columns)
-    export_parquet(spark, user_df, path.join(dest, "user"))
-
-
 def twitter_search_transform(
     spark: SparkSession,
     src: str,
     dest: str,
+    processed_at: str,
     tweet_columns: List[str],
     export_users_flag: bool,
     user_columns: List[str],
 ):
     df = spark.read.json(src)
 
-    export_tweets(spark=spark, df=df, dest=dest, tweet_columns=tweet_columns)
+    formatted_dest = path.join(
+        dest, "{table_name}", f"exported_date={processed_at}"
+    )
+
+    tweet_df = get_first_level(
+        df=df, first_level_col="data", column_list=tweet_columns
+    ).withColumn("processed_at", lit(processed_at))
+    export_csv(tweet_df, formatted_dest.format(table_name="tweet"))
 
     if export_users_flag:
-        export_users(spark=spark, df=df, dest=dest, user_columns=user_columns)
+        user_df = get_first_level(
+            df=df, first_level_col="includes.users", column_list=user_columns
+        ).withColumn("processed_at", lit(processed_at))
+        export_csv(user_df, formatted_dest.format(table_name="user"))
 
 
 if __name__ == "__main__":
@@ -92,6 +86,9 @@ if __name__ == "__main__":
     )
     parser.add_argument("--src", help="Source folder", required=True)
     parser.add_argument("--dest", help="Destination folder", required=True)
+    parser.add_argument(
+        "--processed-at", help="Processed timestamp", default=""
+    )
     parser.add_argument(
         "--tweet-columns",
         default=DEFAULT_TWEET_COLUMNS,
@@ -121,6 +118,7 @@ if __name__ == "__main__":
         spark=spark,
         src=args.src,
         dest=args.dest,
+        processed_at=args.processed_at,
         tweet_columns=args.tweet_columns,
         export_users_flag=args.export_users,
         user_columns=args.user_columns,

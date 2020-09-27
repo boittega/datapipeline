@@ -7,4 +7,4 @@ test:
 	pytest tests --cov twitter_search --cov-report term-missing -s -p no:warnings --log-cli-level error
 
 run:
-	python -m twitter_search.transformation --src $(src) --dest $(dest)
+	python -m twitter_search.transformation --src $(src) --dest $(dest) --processed-at $(processed_at)
