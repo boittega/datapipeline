@@ -64,7 +64,7 @@ with DAG(
             BASE_FOLDER.format(stage="bronze", partition=PARTITION_FOLDER),
             "--dest",
             BASE_FOLDER.format(stage="silver", partition=""),
-            "--processed_at",
+            "--processed-at",
             "{{ ts_nodash }}",
         ],
     )
@@ -88,7 +88,7 @@ with DAG(
             "processed_at",
         ],
         folder=BASE_FOLDER.format(
-            stage="silver", partition="tweet/{PARTITION_FOLDER}/*.csv"
+            stage="silver", partition=f"tweet/{PARTITION_FOLDER}/*.csv"
         ),
     )
 
@@ -119,7 +119,7 @@ with DAG(
             "processed_at",
         ],
         folder=BASE_FOLDER.format(
-            stage="silver", partition="user/{PARTITION_FOLDER}/*.csv"
+            stage="silver", partition=f"user/{PARTITION_FOLDER}/*.csv"
         ),
     )
 
